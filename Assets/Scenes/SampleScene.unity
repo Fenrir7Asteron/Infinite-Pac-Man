@@ -267,15 +267,19 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 363951618, guid: 854a68c95345cbc4489cbcdf89d9e3fb, type: 3}
+      propertyPath: grid
+      value: 
+      objectReference: {fileID: 1393255500}
     - target: {fileID: 368455303263599291, guid: 854a68c95345cbc4489cbcdf89d9e3fb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -16.7
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 368455303263599291, guid: 854a68c95345cbc4489cbcdf89d9e3fb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.85
       objectReference: {fileID: 0}
     - target: {fileID: 368455303263599291, guid: 854a68c95345cbc4489cbcdf89d9e3fb,
         type: 3}
@@ -322,11 +326,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3771243044446960224, guid: 854a68c95345cbc4489cbcdf89d9e3fb,
-        type: 3}
-      propertyPath: grid
-      value: 
-      objectReference: {fileID: 1393255500}
     - target: {fileID: 3771243044446960224, guid: 854a68c95345cbc4489cbcdf89d9e3fb,
         type: 3}
       propertyPath: mainCamera

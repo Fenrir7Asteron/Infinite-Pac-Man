@@ -26,22 +26,13 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private Tile[] obstacle;
     [SerializeField] private Tile[] ghostBox;
     [SerializeField] private Tile[] levelBorder;
-
-    [Header("Prefabs")] 
-    [SerializeField] private GameObject tilemap;
-    [SerializeField] private Material tilemapMaterial;
     
-    [Header("References")] 
-    [SerializeField] private Grid grid;
+    [Header("References")]
     [SerializeField] private Camera mainCamera;
     
-    private Tilemap _foreground;
-    private char[,] _levelTiles;
-    private char[,] _fullLevelTiles;
-    
-    // Up, Right, Down, Left moves
-    private readonly Vector2Int[] _moves =
-        {new Vector2Int(1, 0), new Vector2Int(0, 1), new Vector2Int(-1, 0), new Vector2Int(0, -1)};
+    private char[,] _halfLevelTiles;
+    private LevelData _levelData;
+
     private readonly Tuple<int, int, Vector2Int>[] _wallBlueprints =
     {
         // Horizontal bars
@@ -63,14 +54,14 @@ public class LevelGenerator : MonoBehaviour
     {
         while (true)
         {
-            _foreground.ClearAllTiles();
-            _levelTiles = new char[halfHeightInTiles, halfWidthInTiles];
+            _levelData.tilemap.ClearAllTiles();
+            _halfLevelTiles = new char[halfHeightInTiles, halfWidthInTiles];
             mainCamera.orthographicSize = Math.Max(halfHeightInTiles, (int) Math.Ceiling((double) halfWidthInTiles / 4 * 3)) + 3;
             for (int i = 0; i < halfHeightInTiles - 1; ++i)
             {
                 for (int j = 0; j < halfWidthInTiles - 1; ++j)
                 {
-                    _levelTiles[i, j] = '.';
+                    _halfLevelTiles[i, j] = '.';
                 }
             }
 
@@ -93,18 +84,18 @@ public class LevelGenerator : MonoBehaviour
             if (ValidateLevel())
             {
                 RenderLevel();
-                break;
+                return;
             }
         }
     }
 
     private void AddGhostBox()
     {
-        int startX = _fullLevelTiles.GetLength(0) / 2 - ghostBoxHeight / 2;
-        int endX = _fullLevelTiles.GetLength(0) / 2 + ghostBoxHeight / 2;
-        int startY = _fullLevelTiles.GetLength(1) / 2 - ghostBoxWidth / 2;
-        int endY = _fullLevelTiles.GetLength(1) / 2 + ghostBoxWidth / 2;
-        int width = _fullLevelTiles.GetLength(1);
+        int startX = _levelData.levelTiles.GetLength(0) / 2 - ghostBoxHeight / 2;
+        int endX = _levelData.levelTiles.GetLength(0) / 2 + ghostBoxHeight / 2;
+        int startY = _levelData.levelTiles.GetLength(1) / 2 - ghostBoxWidth / 2;
+        int endY = _levelData.levelTiles.GetLength(1) / 2 + ghostBoxWidth / 2;
+        int width = _levelData.levelTiles.GetLength(1);
         // Mark tiles as Ghost, removing all obstacles.
         // -1, +1 are because I want to have box padded with 1 tile-wide empty space.
         for (int i = startX - 1; i < endX + 1; ++i)
@@ -113,15 +104,15 @@ public class LevelGenerator : MonoBehaviour
             {
                 if ((width / 2 - j  == 0 || width / 2 - j  == 1) && i == endX - 1)
                 {
-                    _fullLevelTiles[i, j] = 'D';
+                    _levelData.levelTiles[i, j] = 'D';
                 }
                 else if (i < startX || i >= endX || j < startY || j >= endY)
                 {
-                    _fullLevelTiles[i, j] = '.';
+                    _levelData.levelTiles[i, j] = '.';
                 }
                 else
                 {
-                    _fullLevelTiles[i, j] = 'G';
+                    _levelData.levelTiles[i, j] = 'G';
                 }
             }
         }
@@ -134,19 +125,19 @@ public class LevelGenerator : MonoBehaviour
 
     private void MirrorLevel()
     {
-        // fullLevelTiles is _levelTiles reflected horizontally and vertically - making symmetric level.
-        _fullLevelTiles = new char[halfHeightInTiles * 2, halfWidthInTiles * 2];
+        // _levelData.levelTiles is _halfLevelTiles reflected horizontally and vertically - making symmetric level.
+        _levelData.levelTiles = new char[halfHeightInTiles * 2, halfWidthInTiles * 2];
         // Copy generated tiles
         for (int i = halfHeightInTiles; i < halfHeightInTiles * 2; ++i)
         {
             for (int j = halfWidthInTiles; j < halfWidthInTiles * 2; ++j)
             {
                 
-                _fullLevelTiles[i, j] = _levelTiles[i - halfHeightInTiles, j - halfWidthInTiles];
+                _levelData.levelTiles[i, j] = _halfLevelTiles[i - halfHeightInTiles, j - halfWidthInTiles];
                 // After level is generated we do not need information about corridors.
-                if (_fullLevelTiles[i, j] == 'C')
+                if (_levelData.levelTiles[i, j] == 'C')
                 {
-                    _fullLevelTiles[i, j] = '.';
+                    _levelData.levelTiles[i, j] = '.';
                 }
             }
         }
@@ -155,7 +146,7 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = halfWidthInTiles - 1; j >= 0; --j)
             {
-                _fullLevelTiles[i, j] = _fullLevelTiles[i, halfWidthInTiles + (halfWidthInTiles - j - 1)];
+                _levelData.levelTiles[i, j] = _levelData.levelTiles[i, halfWidthInTiles + (halfWidthInTiles - j - 1)];
             }
         }
         // Reflect vertically
@@ -163,15 +154,15 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = 0; j < halfWidthInTiles * 2; ++j)
             {
-                _fullLevelTiles[i, j] = _fullLevelTiles[halfHeightInTiles + (halfHeightInTiles - i - 1), j];
+                _levelData.levelTiles[i, j] = _levelData.levelTiles[halfHeightInTiles + (halfHeightInTiles - i - 1), j];
             }
         }
     }
 
     private bool ValidateLevel()
     {
-        int height = _fullLevelTiles.GetLength(0);
-        int width = _fullLevelTiles.GetLength(1);
+        int height = _levelData.levelTiles.GetLength(0);
+        int width = _levelData.levelTiles.GetLength(1);
         int countEmptySpaces = 0;
         Vector2Int start = new Vector2Int(0, 0);
         bool[,] visited = new bool[height, width];
@@ -179,7 +170,7 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = 0; j < width; ++j)
             {
-                if (Free(_fullLevelTiles, new Vector2Int(i, j)))
+                if (Free(_levelData.levelTiles, new Vector2Int(i, j)))
                 {
                     ++countEmptySpaces;
                     start = new Vector2Int(i, j);
@@ -193,7 +184,7 @@ public class LevelGenerator : MonoBehaviour
         {
             return false;
         }
-        dfs(start, _fullLevelTiles, visited);
+        dfs(start, _levelData.levelTiles, visited);
 
         int countVisited = 0;
         for (int i = 0; i < height; ++i)
@@ -217,7 +208,7 @@ public class LevelGenerator : MonoBehaviour
     private void dfs(Vector2Int currentPos, char[,] tiles, bool[,] visited)
     {
         visited[currentPos.x, currentPos.y] = true;
-        foreach (var move in _moves)
+        foreach (var move in Globals.Moves)
         {
             var nextPos = currentPos + move;
             if (nextPos.x < 0 || nextPos.x >= visited.GetLength(0) || nextPos.y < 0 || nextPos.y >= visited.GetLength(1))
@@ -233,110 +224,110 @@ public class LevelGenerator : MonoBehaviour
 
     private void RenderLevel()
     {
-        _foreground.ClearAllTiles();
-        int height = _fullLevelTiles.GetLength(0);
-        int width = _fullLevelTiles.GetLength(1);
+        _levelData.tilemap.ClearAllTiles();
+        int height = _levelData.levelTiles.GetLength(0);
+        int width = _levelData.levelTiles.GetLength(1);
         
         // Render ghost box
-        int startX = _fullLevelTiles.GetLength(0) / 2 - ghostBoxHeight / 2;
-        int endX = _fullLevelTiles.GetLength(0) / 2 + ghostBoxHeight / 2;
-        int startY = _fullLevelTiles.GetLength(1) / 2 - ghostBoxWidth / 2;
-        int endY = _fullLevelTiles.GetLength(1) / 2 + ghostBoxWidth / 2;
+        int startX = _levelData.levelTiles.GetLength(0) / 2 - ghostBoxHeight / 2;
+        int endX = _levelData.levelTiles.GetLength(0) / 2 + ghostBoxHeight / 2;
+        int startY = _levelData.levelTiles.GetLength(1) / 2 - ghostBoxWidth / 2;
+        int endY = _levelData.levelTiles.GetLength(1) / 2 + ghostBoxWidth / 2;
         // Render left and right parts of box
         for (int i = startX + 1; i < endX - 1; ++i)
         {
-            if (_fullLevelTiles[i, startY] == 'D')
+            if (_levelData.levelTiles[i, startY] == 'D')
             {
-                RenderTile(i, startY, _fullLevelTiles);
+                RenderTile(i, startY, _levelData.levelTiles);
             }
             else
             {
-                RenderTile(i, startY, _fullLevelTiles, (int) TileDirection.Left);
+                RenderTile(i, startY, _levelData.levelTiles, (int) TileDirection.Left);
             }
-            if (_fullLevelTiles[i, endY - 1] == 'D')
+            if (_levelData.levelTiles[i, endY - 1] == 'D')
             {
-                RenderTile(i, endY - 1, _fullLevelTiles);
+                RenderTile(i, endY - 1, _levelData.levelTiles);
             }
             else
             {
-                RenderTile(i, endY - 1, _fullLevelTiles, (int) TileDirection.Right);
+                RenderTile(i, endY - 1, _levelData.levelTiles, (int) TileDirection.Right);
             }
         }
         // Render top and bottom parts of box
         for (int j = startY + 1; j < endY - 1; ++j)
         {
-            if (_fullLevelTiles[endX - 1, j] == 'D')
+            if (_levelData.levelTiles[endX - 1, j] == 'D')
             {
-                RenderTile(endX - 1, j, _fullLevelTiles);
+                RenderTile(endX - 1, j, _levelData.levelTiles);
             }
             else
             {
-                RenderTile(endX - 1, j, _fullLevelTiles, (int) TileDirection.Top);
+                RenderTile(endX - 1, j, _levelData.levelTiles, (int) TileDirection.Top);
             }
-            if (_fullLevelTiles[startX, j] == 'D')
+            if (_levelData.levelTiles[startX, j] == 'D')
             {
-                RenderTile(startX, j, _fullLevelTiles);
+                RenderTile(startX, j, _levelData.levelTiles);
             }
             else
             {
-                RenderTile(startX, j, _fullLevelTiles, (int) TileDirection.Bottom);
+                RenderTile(startX, j, _levelData.levelTiles, (int) TileDirection.Bottom);
             }
         }
-        RenderTile(startX, startY, _fullLevelTiles, (int) TileDirection.BottomLeft);
-        RenderTile(startX, endY - 1, _fullLevelTiles, (int) TileDirection.BottomRight);
-        RenderTile(endX - 1, startY, _fullLevelTiles, (int) TileDirection.TopLeft);
-        RenderTile(endX - 1, endY - 1, _fullLevelTiles, (int) TileDirection.TopRight);
+        RenderTile(startX, startY, _levelData.levelTiles, (int) TileDirection.BottomLeft);
+        RenderTile(startX, endY - 1, _levelData.levelTiles, (int) TileDirection.BottomRight);
+        RenderTile(endX - 1, startY, _levelData.levelTiles, (int) TileDirection.TopLeft);
+        RenderTile(endX - 1, endY - 1, _levelData.levelTiles, (int) TileDirection.TopRight);
         
         // Render walls
         for (int i = 1; i < height - 1; ++i)
         {
             for (int j = 1; j < width - 1; ++j)
             {
-                if (_fullLevelTiles[i, j] != 'W')
+                if (_levelData.levelTiles[i, j] != 'W')
                 {
                     continue;
                 }
                 var current = new Vector2Int(i, j);
-                var up = current + _moves[(int) MoveDirection.Up];
-                var right = current + _moves[(int) MoveDirection.Right];
-                var down = current + _moves[(int) MoveDirection.Down];
-                var left = current + _moves[(int) MoveDirection.Left];
+                var up = current + Globals.Moves[(int) Globals.MoveDirection.Up];
+                var right = current + Globals.Moves[(int) Globals.MoveDirection.Right];
+                var down = current + Globals.Moves[(int) Globals.MoveDirection.Down];
+                var left = current + Globals.Moves[(int) Globals.MoveDirection.Left];
                 
-                if (Occupied(_fullLevelTiles, new []{up, right, down, left}))
+                if (Occupied(_levelData.levelTiles, new []{up, right, down, left}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.Other);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.Other);
                 }
-                else if (Occupied(_fullLevelTiles, new []{right, down, left}))
+                else if (Occupied(_levelData.levelTiles, new []{right, down, left}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.Top);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.Top);
                 }
-                else if (Occupied(_fullLevelTiles, new []{up, down, left}))
+                else if (Occupied(_levelData.levelTiles, new []{up, down, left}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.Right);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.Right);
                 } 
-                else if (Occupied(_fullLevelTiles, new []{up, right, left}))
+                else if (Occupied(_levelData.levelTiles, new []{up, right, left}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.Bottom);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.Bottom);
                 }
-                else if (Occupied(_fullLevelTiles, new []{up, right, down}))
+                else if (Occupied(_levelData.levelTiles, new []{up, right, down}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.Left);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.Left);
                 }
-                else if (Occupied(_fullLevelTiles, new []{right, down}))
+                else if (Occupied(_levelData.levelTiles, new []{right, down}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.TopLeft);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.TopLeft);
                 }
-                else if (Occupied(_fullLevelTiles, new []{left, down}))
+                else if (Occupied(_levelData.levelTiles, new []{left, down}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.TopRight);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.TopRight);
                 }
-                else if (Occupied(_fullLevelTiles, new []{up, left}))
+                else if (Occupied(_levelData.levelTiles, new []{up, left}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.BottomRight);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.BottomRight);
                 }
-                else if (Occupied(_fullLevelTiles, new []{right, up}))
+                else if (Occupied(_levelData.levelTiles, new []{right, up}))
                 {
-                    RenderTile(i, j, _fullLevelTiles, (int) TileDirection.BottomLeft);
+                    RenderTile(i, j, _levelData.levelTiles, (int) TileDirection.BottomLeft);
                 }
             }
         }
@@ -344,18 +335,18 @@ public class LevelGenerator : MonoBehaviour
         // Render borders
         for (int i = 1; i < height - 1; ++i)
         {
-            RenderTile(i, 0, _fullLevelTiles, (int) TileDirection.Left);
-            RenderTile(i, width - 1, _fullLevelTiles, (int) TileDirection.Right);
+            RenderTile(i, 0, _levelData.levelTiles, (int) TileDirection.Left);
+            RenderTile(i, width - 1, _levelData.levelTiles, (int) TileDirection.Right);
         }
         for (int j = 1; j < width - 1; ++j)
         {
-            RenderTile(0, j, _fullLevelTiles, (int) TileDirection.Bottom);
-            RenderTile(height - 1,j, _fullLevelTiles, (int) TileDirection.Top);
+            RenderTile(0, j, _levelData.levelTiles, (int) TileDirection.Bottom);
+            RenderTile(height - 1,j, _levelData.levelTiles, (int) TileDirection.Top);
         }
-        RenderTile(0, 0, _fullLevelTiles, (int) TileDirection.BottomLeft);
-        RenderTile(0, width - 1, _fullLevelTiles, (int) TileDirection.BottomRight);
-        RenderTile(height - 1, width - 1, _fullLevelTiles, (int) TileDirection.TopRight);
-        RenderTile(height - 1, 0, _fullLevelTiles, (int) TileDirection.TopLeft);
+        RenderTile(0, 0, _levelData.levelTiles, (int) TileDirection.BottomLeft);
+        RenderTile(0, width - 1, _levelData.levelTiles, (int) TileDirection.BottomRight);
+        RenderTile(height - 1, width - 1, _levelData.levelTiles, (int) TileDirection.TopRight);
+        RenderTile(height - 1, 0, _levelData.levelTiles, (int) TileDirection.TopLeft);
     }
 
     private void RenderTile(int x, int y, char[,] tileTable, int tile = -1)
@@ -363,16 +354,16 @@ public class LevelGenerator : MonoBehaviour
         switch (tileTable[x, y])
         {
             case 'W':
-                _foreground.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), obstacle[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), obstacle[tile]);
                 break;
             case 'B':
-                _foreground.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), levelBorder[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), levelBorder[tile]);
                 break;
             case 'G':
-                _foreground.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[tile]);
                 break;
             case 'D':
-                _foreground.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[(int) TileDirection.Other]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[(int) TileDirection.Other]);
                 break;
         }
     }
@@ -404,7 +395,7 @@ public class LevelGenerator : MonoBehaviour
             String tiles = "";
             for (int j = 0; j < halfWidthInTiles; ++j)
             {
-                tiles += _levelTiles[i, j];
+                tiles += _halfLevelTiles[i, j];
             }
 
             Debug.Log(tiles);
@@ -433,14 +424,14 @@ public class LevelGenerator : MonoBehaviour
 
     private bool TryDigCorridor(ref Vector2Int diggerPos)
     {
-        List<int> shuffledIdx = Enumerable.Range(0, _moves.Length).ToList();
+        List<int> shuffledIdx = Enumerable.Range(0, Globals.Moves.Length).ToList();
         RandomShuffle(shuffledIdx);
         List<int> moveLength = Enumerable.Range(3, 8).ToList();
         RandomShuffle(moveLength);
         
         foreach (var idx in shuffledIdx)
         {
-            var dir = _moves[idx];
+            var dir = Globals.Moves[idx];
             foreach (var length in moveLength)
             {
                 if (CanDigCorridor(ref diggerPos, dir, length))
@@ -468,7 +459,7 @@ public class LevelGenerator : MonoBehaviour
                 {
                     continue;
                 }
-                if (!Free(_levelTiles, new Vector2Int(i, j)))
+                if (!Free(_halfLevelTiles, new Vector2Int(i, j)))
                 {
                     return false;
                 }
@@ -489,17 +480,17 @@ public class LevelGenerator : MonoBehaviour
                 // Digging out of bounds
                 return false;
             }
-            if (_levelTiles[currentPos.x, currentPos.y] != 'W' && _levelTiles[nextPos.x, nextPos.y] == 'W')
+            if (_halfLevelTiles[currentPos.x, currentPos.y] != 'W' && _halfLevelTiles[nextPos.x, nextPos.y] == 'W')
             {
                 // Intersecting wall
                 return false;
             }
-            if (_levelTiles[currentPos.x, currentPos.y] != 'C' && _levelTiles[nextPos.x, nextPos.y] == 'C')
+            if (_halfLevelTiles[currentPos.x, currentPos.y] != 'C' && _halfLevelTiles[nextPos.x, nextPos.y] == 'C')
             {
                 // Intersecting corridor
                 return false;
             }
-            if (_levelTiles[nextPos.x, nextPos.y] == 'B')
+            if (_halfLevelTiles[nextPos.x, nextPos.y] == 'B')
             {
                 // Intersecting border
                 return false;
@@ -508,7 +499,7 @@ public class LevelGenerator : MonoBehaviour
             currentPos += dir;
         }
 
-        if (_levelTiles[currentPos.x, currentPos.y] != '.')
+        if (_halfLevelTiles[currentPos.x, currentPos.y] != '.')
         {
             // Move ended not on the empty space
             return false;
@@ -521,9 +512,9 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = 0; i < length; ++i)
         {
-            if (_levelTiles[currentPos.x, currentPos.y] == '.')
+            if (_halfLevelTiles[currentPos.x, currentPos.y] == '.')
             {
-                _levelTiles[currentPos.x, currentPos.y] = 'C';
+                _halfLevelTiles[currentPos.x, currentPos.y] = 'C';
             }
 
             currentPos += dir;
@@ -544,7 +535,7 @@ public class LevelGenerator : MonoBehaviour
                 {
                     continue;
                 }
-                _levelTiles[i, j] = building;
+                _halfLevelTiles[i, j] = building;
             }
         }
     }
@@ -558,20 +549,10 @@ public class LevelGenerator : MonoBehaviour
             list[randomIndex] = temp;
         }
     }
-    
-    void Start()
-    {
-        _foreground = Instantiate(tilemap, transform.position, Quaternion.identity, grid.transform).GetComponent<Tilemap>();
-        InitTilemap(_foreground, "Foreground");
-        GenerateLevel();
-    }
 
-    private void InitTilemap(Tilemap tilemap, String name)
+    private void Awake()
     {
-        tilemap.name = name;
-        var renderer = tilemap.GetComponent<TilemapRenderer>();
-        renderer.material = tilemapMaterial;
-        renderer.sortingLayerName = name;
+        _levelData = GetComponent<LevelData>();
     }
 
     private enum TileDirection
@@ -587,14 +568,6 @@ public class LevelGenerator : MonoBehaviour
         Other,
     }
 
-    private enum MoveDirection
-    {
-        Up,
-        Right,
-        Down,
-        Left,
-    }
-    
     void Update()
     {
         if (generateLevel)
@@ -621,11 +594,11 @@ public class LevelGenerator : MonoBehaviour
             if (!ReferenceEquals(fi, null)) {
                 using (var sw = new StreamWriter(exportPath))
                 {
-                    for (int i = 0; i < _fullLevelTiles.GetLength(0); i++)
+                    for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
                     {
-                        for (int j = 0; j < _fullLevelTiles.GetLength(1); j++)
+                        for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
                         {
-                            sw.Write(_fullLevelTiles[i, j]);
+                            sw.Write(_levelData.levelTiles[i, j]);
                         }
                         sw.Write("\n");
                     }
@@ -655,16 +628,16 @@ public class LevelGenerator : MonoBehaviour
             if (!ReferenceEquals(fi, null)) {
                 using (var sr = new StreamReader(importPath))
                 {
-                    for (int i = 0; i < _fullLevelTiles.GetLength(0); i++)
+                    for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
                     {
                         String line = sr.ReadLine();
                         if (!ReferenceEquals(line, null))
                         {
-                            for (int j = 0; j < _fullLevelTiles.GetLength(1); j++)
+                            for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
                             {
                                 if (j < line.Length)
                                 {
-                                    _fullLevelTiles[i, j] = line[j];
+                                    _levelData.levelTiles[i, j] = line[j];
                                 }
                             }
                         }

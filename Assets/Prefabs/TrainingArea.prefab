@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 368455303263599291}
   - component: {fileID: 3771243044446960224}
+  - component: {fileID: 363951618}
+  - component: {fileID: 363951619}
   m_Layer: 0
   m_Name: TrainingArea
   m_TagString: Untagged
@@ -82,7 +84,38 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a9452637f10b9764991749e7b43138d8, type: 2}
   - {fileID: 11400000, guid: eead86aa71f1fd340aae126ca576f837, type: 2}
   - {fileID: 11400000, guid: 98cb120845bb1ff4782a828daee39e70, type: 2}
-  tilemap: {fileID: 2675987771354692762, guid: fcc2ad3bdb877f849adda231300bc15e, type: 3}
+  mainCamera: {fileID: 0}
+--- !u!114 &363951618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209890137570903637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b203b2eed188f254ab8421ec403a8537, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemap: {fileID: 0}
+  tilemapPrefab: {fileID: 2675987771354692762, guid: fcc2ad3bdb877f849adda231300bc15e,
+    type: 3}
   tilemapMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   grid: {fileID: 0}
-  mainCamera: {fileID: 0}
+--- !u!114 &363951619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209890137570903637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75482962ae36eaa47b994f299fcff5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  livesLeft: 2
+  livesMax: 2
+  ghostsMax: 4
+  pacman: {fileID: 161668830283158782, guid: e0d388cc4ede1b940b8ce89f3d9add81, type: 3}
+  levelData: {fileID: 0}
