@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4209890137570903637
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 368455303263599291}
+  - component: {fileID: 3771243044446960224}
+  m_Layer: 0
+  m_Name: TrainingArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &368455303263599291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209890137570903637}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3771243044446960224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209890137570903637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73947dd43e8785d40879b1e41abc490a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  halfWidthInTiles: 14
+  halfHeightInTiles: 15
+  ghostBoxWidth: 6
+  ghostBoxHeight: 4
+  maxEmptySpaces: 0.45
+  generateLevel: 0
+  exportName: level1.txt
+  exportLevel: 0
+  importName: level1.txt
+  importLevel: 0
+  obstacle:
+  - {fileID: 11400000, guid: 28bce1757f986154da1be7ad28e1c8f6, type: 2}
+  - {fileID: 11400000, guid: fc932f5026a8c974cbf986333855a221, type: 2}
+  - {fileID: 11400000, guid: 8ad18dfdd215d534382099913c75886a, type: 2}
+  - {fileID: 11400000, guid: 879cfe85921f35a418e90e3b55915646, type: 2}
+  - {fileID: 11400000, guid: 75c4ed108abad624da30a4523963e276, type: 2}
+  - {fileID: 11400000, guid: 28e8945525feccd4b920ed1cf4b70060, type: 2}
+  - {fileID: 11400000, guid: cc679faa640fd9b42a999d52d797ce2d, type: 2}
+  - {fileID: 11400000, guid: 90cb1241480ed7b43836cce3635f9b93, type: 2}
+  - {fileID: 11400000, guid: 28ba7ff7658c84a4e8fb422aa6f962e8, type: 2}
+  ghostBox:
+  - {fileID: 11400000, guid: 2fefca6b4a3c52048a6bba99eae44674, type: 2}
+  - {fileID: 11400000, guid: a8100f17581666a418530a3a0b6dc841, type: 2}
+  - {fileID: 11400000, guid: a830de592307a584393030105a4f7bea, type: 2}
+  - {fileID: 11400000, guid: 55e07c9bef2e7f54f8290a8a14be69ac, type: 2}
+  - {fileID: 11400000, guid: 891e84ffd3c53aa4f92bf4512423b976, type: 2}
+  - {fileID: 11400000, guid: 3420ba3b7fd7e644080e6cddee249e56, type: 2}
+  - {fileID: 11400000, guid: bea73fd0edbf9674f97829b3572d8ec6, type: 2}
+  - {fileID: 11400000, guid: cb206844bd8722b4f9409c613e2e632f, type: 2}
+  - {fileID: 11400000, guid: c9c481dfa2b70ba45930ceae5e780b5a, type: 2}
+  levelBorder:
+  - {fileID: 11400000, guid: 29febbdd44318a545b1856ae601f3e80, type: 2}
+  - {fileID: 11400000, guid: 97e03098a29881646bcc131817364984, type: 2}
+  - {fileID: 11400000, guid: eda3b1e8d69f48a4e893b0816cebd9ce, type: 2}
+  - {fileID: 11400000, guid: d61aa798eeda52346858e3bd22c7417c, type: 2}
+  - {fileID: 11400000, guid: c761182ea0f237e488795dda7a67f2ae, type: 2}
+  - {fileID: 11400000, guid: a9452637f10b9764991749e7b43138d8, type: 2}
+  - {fileID: 11400000, guid: eead86aa71f1fd340aae126ca576f837, type: 2}
+  - {fileID: 11400000, guid: 98cb120845bb1ff4782a828daee39e70, type: 2}
+  tilemap: {fileID: 2675987771354692762, guid: fcc2ad3bdb877f849adda231300bc15e, type: 3}
+  tilemapMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  grid: {fileID: 0}
+  mainCamera: {fileID: 0}
