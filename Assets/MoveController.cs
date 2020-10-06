@@ -6,11 +6,13 @@ using UnityEngine;
 public class MoveController : MonoBehaviour
 {
     public Globals.MoveDirection agentMove;
-    public bool alive;
+    public bool alive = false;
     public float moveSpeed = 20.0f;
+    public float aliveDelay = 0.0f;
     public Vector2Int currentTile;
     public AgentType agentType;
 
+    private Vector2Int _spawnTile;
     private LevelManager _levelManager;
     private Animator _animator;
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
@@ -27,7 +29,11 @@ public class MoveController : MonoBehaviour
         _levelManager = FindObjectOfType<LevelManager>();
         _animator = GetComponent<Animator>();
         agentMove = Globals.MoveDirection.None;
-        alive = true;
+        if (agentType == AgentType.PacMan)
+        {
+            alive = true;
+        }
+        _spawnTile = currentTile;
     }
 
     // Update is called once per frame
@@ -55,7 +61,28 @@ public class MoveController : MonoBehaviour
                 TryChangeDirection(Globals.MoveDirection.Left);
             }
 
-            _animator.SetBool(IsMoving, agentMove != Globals.MoveDirection.None);
+            if (agentType == AgentType.PacMan)
+            {
+                _animator.SetBool(IsMoving, agentMove != Globals.MoveDirection.None);
+            }
+        }
+    }
+
+    public void Die()
+    {
+        alive = false;
+        if (agentType == AgentType.PacMan)
+        {
+            _levelManager.livesLeft--;
+            if (_levelManager.livesLeft > 0)
+            {
+                RespawnAgent();
+            }
+        }
+
+        if (agentType == AgentType.Ghost)
+        {
+            RespawnAgent();
         }
     }
 
@@ -88,7 +115,10 @@ public class MoveController : MonoBehaviour
     private void ChangeDirection(Globals.MoveDirection dir)
     {
         agentMove = dir;
-        transform.eulerAngles = new Vector3(0, 0, 90 - (int) dir * 90);
+        if (agentType == AgentType.PacMan)
+        {
+            transform.eulerAngles = new Vector3(0, 0, 90 - (int) dir * 90);
+        }
     }
     
     private bool Passable(Vector2Int pos)
@@ -98,9 +128,9 @@ public class MoveController : MonoBehaviour
         {
             case AgentType.PacMan:
                 return new List<char>() {'W', 'B', 'G', 'D'}.Contains(tile) == false;
-            // Only ghosts can walk inside ghost box and through doors
+            // Only ghosts can walk through ghost box doors
             case AgentType.Ghost:
-                return new List<char>() {'W', 'B'}.Contains(tile) == false;
+                return new List<char>() {'W', 'B', 'G'}.Contains(tile) == false;
         }
 
         return false;
@@ -129,19 +159,49 @@ public class MoveController : MonoBehaviour
                 currentTile = _levelManager.levelData.TileByLocalPosition(transform.localPosition);
             }
         }
+        if (aliveDelay > 1e-9)
+        {
+            aliveDelay -= Time.deltaTime;
+        }
+        if (aliveDelay < 1e-9)
+        {
+            aliveDelay = 0.0f;
+            alive = true;
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Dot") && agentType == AgentType.PacMan)
         {
             _levelManager.ConsumeDot();
             Destroy(other.gameObject);
         }
+        
         if (other.gameObject.CompareTag("PowerPill") && agentType == AgentType.PacMan)
         {
             _levelManager.ConsumePowerPill();
             Destroy(other.gameObject);
         }
+
+        if (other.gameObject.CompareTag("Ghost") && agentType == AgentType.PacMan)
+        {
+            var otherController = other.gameObject.GetComponent<MoveController>();
+            if (_levelManager.levelData.powerPillActive && otherController.alive)
+            {
+                other.gameObject.GetComponent<MoveController>().Die();
+                _levelManager.score += 100;
+            }
+            else if (alive)
+            {
+                Die();
+            }
+        }
+    }
+
+    private void RespawnAgent()
+    {
+        currentTile = _spawnTile;
+        transform.localPosition = _levelManager.levelData.LocalPositionByTile(_spawnTile);
     }
 }

@@ -10,9 +10,11 @@ public class LevelManager : MonoBehaviour
     public int livesMax = 2;
     public int powerPillMax = 4;
     public float powerPillDuration = 5.0f;
+    public float ghostDelay = 5.0f;
     [Range(1, 6)] public int ghostsMax = 4;
     [Header("Prefabs")]
     [SerializeField] private GameObject pacman;
+    [SerializeField] private GameObject[] ghosts;
     [SerializeField] private GameObject dot;
     [SerializeField] private GameObject powerPill;
     
@@ -32,10 +34,10 @@ public class LevelManager : MonoBehaviour
         levelData.Reset();
         _levelGenerator.GenerateLevel();
         // levelData.PrintLevel();
-        var tiles = GetFreeTiles();
-        SpawnPacMan(tiles);
-        // SpawnGhosts();
-        SpawnConsumables(tiles);
+        var freeTiles = GetFreeTiles();
+        SpawnPacMan(freeTiles);
+        SpawnGhosts();
+        SpawnConsumables(freeTiles);
     }
     
     public void ConsumeDot()
@@ -70,6 +72,25 @@ public class LevelManager : MonoBehaviour
 
         return freeTiles;
     }
+    
+    private List<Vector2Int> GetGhostTiles()
+    {
+        List<Vector2Int> ghostTiles = new List<Vector2Int>();
+        int startX = levelData.LevelHeight / 2 - _levelGenerator.ghostBoxHeight / 2 + 1;
+        int startY = levelData.LevelWidth / 2 - _levelGenerator.ghostBoxWidth / 2 + 1;
+        int endX = levelData.LevelHeight / 2 + _levelGenerator.ghostBoxHeight / 2 - 1;
+        int endY = levelData.LevelWidth / 2 + _levelGenerator.ghostBoxWidth / 2 - 1;
+        for (int i = startX; i < endX; ++i)
+        {
+            for (int j = startY; j < endY; ++j)
+            {
+                Vector2Int tile = new Vector2Int(i, j);
+                ghostTiles.Add(tile);
+            }
+        }
+
+        return ghostTiles;
+    }
 
     private void SpawnConsumables(List<Vector2Int> freeTiles)
     {
@@ -81,6 +102,7 @@ public class LevelManager : MonoBehaviour
             Vector2Int tile = freeTiles[shuffledIdx[idx]];
             var _powerPill = Instantiate(powerPill, transform);
             _powerPill.transform.localPosition = levelData.LocalPositionByTile(tile);
+            _powerPill.transform.SetAsFirstSibling();
             levelData.dotsRemain++;
             idx++;
         }
@@ -89,6 +111,7 @@ public class LevelManager : MonoBehaviour
             Vector2Int tile = freeTiles[shuffledIdx[idx]];
             var _dot = Instantiate(dot, transform);
             _dot.transform.localPosition = levelData.LocalPositionByTile(tile);
+            _dot.transform.SetAsFirstSibling();
             levelData.dotsRemain++;
             idx++;
         }
@@ -103,7 +126,6 @@ public class LevelManager : MonoBehaviour
             return;
         }
         
-        Debug.Log(freeTiles.Count);
         List<int> shuffledIdx = Utils.RandomPermutation(0, freeTiles.Count);
         foreach (var idx in shuffledIdx)
         {
@@ -117,6 +139,23 @@ public class LevelManager : MonoBehaviour
         }
     }
     
+    private void SpawnGhosts()
+    {
+        var freeTiles = GetGhostTiles();
+        List<int> shuffledIdx = Utils.RandomPermutation(0, freeTiles.Count);
+        int idx = 0;
+        while (idx < ghosts.Length)
+        {
+            Vector2Int tile = freeTiles[shuffledIdx[idx]];
+            var ghost = Instantiate(ghosts[idx], transform);
+            ghost.transform.localPosition = levelData.LocalPositionByTile(tile);
+            var controller = ghost.GetComponent<MoveController>();
+            controller.currentTile = tile;
+            controller.aliveDelay = ghostDelay * idx;
+            idx++;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

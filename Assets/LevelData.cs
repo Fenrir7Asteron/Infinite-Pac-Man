@@ -30,7 +30,7 @@ public class LevelData : MonoBehaviour
     public bool Free(Vector2Int pos)
     {
         char tile = levelTiles[pos.x, pos.y];
-        return new List<char>() {'W', 'B', 'G', 'D'}.Contains(tile) == false;
+        return new List<char>() {'W', 'B', 'G', 'D', ' '}.Contains(tile) == false;
     }
     
     public void PrintLevel()

@@ -11,8 +11,8 @@ public class LevelGenerator : MonoBehaviour
     [Header("Level parameters")]
     [SerializeField] [Range(8, 30)] private int halfWidthInTiles = 14;
     [SerializeField] [Range(8, 30)] private int halfHeightInTiles = 15;
-    [SerializeField] [Range(6, 10)] private int ghostBoxWidth = 6;
-    [SerializeField] [Range(4, 10)] private int ghostBoxHeight = 4;
+    [Range(6, 10)] public int ghostBoxWidth = 6;
+    [Range(4, 10)] public int ghostBoxHeight = 4;
     [SerializeField] [Range(0.45f, 1.0f)] private float maxEmptySpaces = 0.45f;
     
     [Header("Controls")]
@@ -78,7 +78,7 @@ public class LevelGenerator : MonoBehaviour
                 canMove = TryDigCorridor(ref diggerPos);
                 // PrintLevel();
             }
-
+            
             MirrorLevel();
             AddGhostBox();
             
@@ -126,6 +126,10 @@ public class LevelGenerator : MonoBehaviour
                 else if (i < startX || i >= endX || j < startY || j >= endY)
                 {
                     _levelData.levelTiles[i, j] = '.';
+                } 
+                else if (i > startX && i < endX - 1 && j > startY && j < endY - 1)
+                {
+                    _levelData.levelTiles[i, j] = ' ';
                 }
                 else
                 {
@@ -149,7 +153,6 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = halfWidthInTiles; j < halfWidthInTiles * 2; ++j)
             {
-                
                 _levelData.levelTiles[i, j] = _halfLevelTiles[i - halfHeightInTiles, j - halfWidthInTiles];
                 // After level is generated we do not need information about corridors.
                 if (_levelData.levelTiles[i, j] == 'C')
