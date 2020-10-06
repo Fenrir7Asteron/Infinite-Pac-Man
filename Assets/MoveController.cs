@@ -20,7 +20,7 @@ public class MoveController : MonoBehaviour
         PacMan,
         Ghost,
     }
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,16 +93,14 @@ public class MoveController : MonoBehaviour
     
     private bool Passable(Vector2Int pos)
     {
+        char tile = _levelManager.levelData.levelTiles[pos.x, pos.y];
         switch (agentType)
         {
             case AgentType.PacMan:
-                return _levelManager.levelData.levelTiles[pos.x, pos.y] != 'W' && 
-                _levelManager.levelData.levelTiles[pos.x, pos.y] != 'B' && 
-                _levelManager.levelData.levelTiles[pos.x, pos.y] != 'G';
-            // Only ghosts can walk inside ghost box
+                return new List<char>() {'W', 'B', 'G', 'D'}.Contains(tile) == false;
+            // Only ghosts can walk inside ghost box and through doors
             case AgentType.Ghost:
-                return _levelManager.levelData.levelTiles[pos.x, pos.y] != 'W' &&
-                       _levelManager.levelData.levelTiles[pos.x, pos.y] != 'B';
+                return new List<char>() {'W', 'B'}.Contains(tile) == false;
         }
 
         return false;
@@ -115,14 +113,11 @@ public class MoveController : MonoBehaviour
             var move = Globals.Moves[(int) agentMove];
             var localPosNext = _levelManager.levelData.LocalPositionByTile(currentTile + move);
             var localPosCurrent = _levelManager.levelData.LocalPositionByTile(currentTile);
-            Debug.Log(currentTile + ", " + move);
-            Debug.Log(localPosCurrent + ", " + localPosNext);
             if ((localPosNext - transform.localPosition).magnitude < (localPosNext - localPosCurrent).magnitude)
             {
                 // Stop if going in the wall
                 if (!Passable(currentTile + move))
                 {
-                    Debug.Log("Stop. Wall ahead.");
                     transform.localPosition = _levelManager.levelData.LocalPositionByTile(currentTile);
                     agentMove = Globals.MoveDirection.None;
                 }
@@ -133,6 +128,20 @@ public class MoveController : MonoBehaviour
                 transform.localPosition += new Vector3(move.y, move.x, 0) * moveSpeed;
                 currentTile = _levelManager.levelData.TileByLocalPosition(transform.localPosition);
             }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Dot") && agentType == AgentType.PacMan)
+        {
+            _levelManager.ConsumeDot();
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.CompareTag("PowerPill") && agentType == AgentType.PacMan)
+        {
+            _levelManager.ConsumePowerPill();
+            Destroy(other.gameObject);
         }
     }
 }

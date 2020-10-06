@@ -67,6 +67,7 @@ public class LevelGenerator : MonoBehaviour
 
             Build(halfWidthInTiles, 1, new Vector2Int(halfHeightInTiles - 1, 0), 'B');
             Build(1, halfHeightInTiles, new Vector2Int(0, halfWidthInTiles - 1), 'B');
+            ReserveGhostBox();
             // PrintLevel();
             var diggerPos = new Vector2Int(0, 0);
 
@@ -85,6 +86,22 @@ public class LevelGenerator : MonoBehaviour
             {
                 RenderLevel();
                 return;
+            }
+        }
+    }
+    
+    private void ReserveGhostBox()
+    {
+        int startX = 0;
+        int endX = ghostBoxHeight / 2;
+        int startY = 0;
+        int endY = ghostBoxWidth / 2;
+        // Mark tiles as Ghost, disallowing generator to place walls there.
+        for (int i = startX; i < endX + 1; ++i)
+        {
+            for (int j = startY; j < endY + 1; ++j)
+            {
+                _halfLevelTiles[i, j] = 'G';
             }
         }
     }
@@ -120,7 +137,7 @@ public class LevelGenerator : MonoBehaviour
 
     private bool Free(char[,] tiles, Vector2Int pos)
     {
-        return tiles[pos.x, pos.y] != 'W' && tiles[pos.x, pos.y] != 'B';
+        return tiles[pos.x, pos.y] != 'W' && tiles[pos.x, pos.y] != 'B' && tiles[pos.x, pos.y] != 'G';
     }
 
     private void MirrorLevel()
@@ -387,7 +404,7 @@ public class LevelGenerator : MonoBehaviour
         return count == cells.Length;
     }
 
-    private void PrintLevel()
+    public void PrintLevel()
     {
         Debug.Log("Level Table");
         for (int i = 0; i < halfHeightInTiles; ++i)
@@ -404,8 +421,7 @@ public class LevelGenerator : MonoBehaviour
 
     private bool TryBuild(Vector2Int diggerPos)
     {
-        List<int> shuffledIdx = Enumerable.Range(0, _wallBlueprints.Length).ToList();
-        RandomShuffle(shuffledIdx);
+        List<int> shuffledIdx = Utils.RandomPermutation(0, _wallBlueprints.Length);
         foreach (var idx in shuffledIdx)
         {
             var blueprint = _wallBlueprints[idx];
@@ -424,11 +440,9 @@ public class LevelGenerator : MonoBehaviour
 
     private bool TryDigCorridor(ref Vector2Int diggerPos)
     {
-        List<int> shuffledIdx = Enumerable.Range(0, Globals.Moves.Length).ToList();
-        RandomShuffle(shuffledIdx);
-        List<int> moveLength = Enumerable.Range(3, 8).ToList();
-        RandomShuffle(moveLength);
-        
+        List<int> shuffledIdx = Utils.RandomPermutation(0, Globals.Moves.Length);
+        List<int> moveLength = Utils.RandomPermutation(3, 8);
+
         foreach (var idx in shuffledIdx)
         {
             var dir = Globals.Moves[idx];
@@ -537,16 +551,6 @@ public class LevelGenerator : MonoBehaviour
                 }
                 _halfLevelTiles[i, j] = building;
             }
-        }
-    }
-
-    private void RandomShuffle<T>(List<T> list)
-    {
-        for (int i = 0; i < list.Count; i++) {
-            T temp = list[i];
-            int randomIndex = Random.Range(i, list.Count);
-            list[i] = list[randomIndex];
-            list[randomIndex] = temp;
         }
     }
 

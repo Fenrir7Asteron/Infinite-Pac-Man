@@ -9,6 +9,9 @@ public class LevelData : MonoBehaviour
 {
     [HideInInspector] public char[,] levelTiles;
     [HideInInspector] public Tilemap tilemap;
+    [HideInInspector] public int dotsRemain;
+    [HideInInspector] public int powerPillsRemain;
+    [HideInInspector] public bool powerPillActive = false;
     [Header("Prefabs")] 
     [SerializeField] private GameObject tilemapPrefab;
     [SerializeField] private Material tilemapMaterial;
@@ -16,10 +19,33 @@ public class LevelData : MonoBehaviour
     [SerializeField] private Grid grid;
     public int LevelHeight => levelTiles.GetLength(0);
     public int LevelWidth => levelTiles.GetLength(1);
-    
+
+    public void Reset()
+    {
+        dotsRemain = 0;
+        powerPillsRemain = 0;
+        powerPillActive = false;
+    }
+
     public bool Free(Vector2Int pos)
     {
-        return levelTiles[pos.x, pos.y] != 'W' && levelTiles[pos.x, pos.y] != 'B' && levelTiles[pos.x, pos.y] != 'G';
+        char tile = levelTiles[pos.x, pos.y];
+        return new List<char>() {'W', 'B', 'G', 'D'}.Contains(tile) == false;
+    }
+    
+    public void PrintLevel()
+    {
+        Debug.Log("Level Table");
+        for (int i = 0; i < LevelHeight; ++i)
+        {
+            String tiles = "";
+            for (int j = 0; j < LevelWidth; ++j)
+            {
+                tiles += levelTiles[i, j];
+            }
+
+            Debug.Log(tiles);
+        }
     }
 
     public Vector3 LocalPositionByTile(Vector2Int pos)

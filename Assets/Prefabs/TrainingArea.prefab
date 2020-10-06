@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73947dd43e8785d40879b1e41abc490a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  halfWidthInTiles: 14
-  halfHeightInTiles: 15
+  halfWidthInTiles: 12
+  halfHeightInTiles: 13
   ghostBoxWidth: 6
   ghostBoxHeight: 4
   maxEmptySpaces: 0.45
@@ -98,6 +98,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 0}
+  dotsRemain: 0
+  powerPillsRemain: 0
+  powerPillActive: 0
   tilemapPrefab: {fileID: 2675987771354692762, guid: fcc2ad3bdb877f849adda231300bc15e,
     type: 3}
   tilemapMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
@@ -114,8 +117,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75482962ae36eaa47b994f299fcff5a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 0
   livesLeft: 2
   livesMax: 2
+  powerPillMax: 4
+  powerPillDuration: 7
   ghostsMax: 4
   pacman: {fileID: 161668830283158782, guid: e0d388cc4ede1b940b8ce89f3d9add81, type: 3}
+  dot: {fileID: 3189367775717858285, guid: f663b497fe4fc9249ab063e883ce3e94, type: 3}
+  powerPill: {fileID: 8375598748595837999, guid: 5c467895c9e076e4790afdd25fb5a64a,
+    type: 3}
   levelData: {fileID: 0}
