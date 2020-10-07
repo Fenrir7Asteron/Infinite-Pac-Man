@@ -14,6 +14,9 @@ GameObject:
   - component: {fileID: -8339634470403739788}
   - component: {fileID: -8776981597225133815}
   - component: {fileID: 6682598942517228926}
+  - component: {fileID: 3079071128216702328}
+  - component: {fileID: -1632150910768262767}
+  - component: {fileID: 5224446496920102499}
   m_Layer: 0
   m_Name: Pac-Man
   m_TagString: Player
@@ -121,7 +124,10 @@ MonoBehaviour:
   moveSpeed: 0.1
   aliveDelay: 0
   currentTile: {x: 0, y: 0}
+  spawnTile: {x: 0, y: 0}
   agentType: 0
+  ghostNormal: {fileID: 0}
+  ghostScared: {fileID: 0}
 --- !u!58 &-8776981597225133815
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -159,3 +165,62 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &3079071128216702328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161668830283158782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4458e7a9fc742154bb83b5dc0ac40b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
+  type: 0
+  timePenalty: 0
+  characterController: {fileID: 0}
+--- !u!114 &-1632150910768262767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161668830283158782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 85
+    NumStackedVectorObservations: 1
+    VectorActionSize: 05000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 5022602860645237092, guid: aa88165a1e7fda3459e7cd4c99d9f580, type: 3}
+  m_InferenceDevice: 0
+  m_BehaviorType: 1
+  m_BehaviorName: Pacman
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
+--- !u!114 &5224446496920102499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161668830283158782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 10
+  TakeActionsBetweenDecisions: 1

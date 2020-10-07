@@ -1,0 +1,99 @@
+{
+    "Ghost": {
+        "checkpoints": [
+            {
+                "steps": 499954,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-499954.nn",
+                "reward": 0.9,
+                "creation_time": 1602040640.3265345
+            },
+            {
+                "steps": 999916,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-999916.nn",
+                "reward": 0.8,
+                "creation_time": 1602043332.1804652
+            },
+            {
+                "steps": 1499956,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-1499956.nn",
+                "reward": 1.0,
+                "creation_time": 1602046104.1703234
+            },
+            {
+                "steps": 1999532,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-1999532.nn",
+                "reward": 0.8518518518518519,
+                "creation_time": 1602048873.7521138
+            },
+            {
+                "steps": 2499979,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-2499979.nn",
+                "reward": 0.9295774647887324,
+                "creation_time": 1602051657.9808986
+            },
+            {
+                "steps": 2999882,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-2999882.nn",
+                "reward": 1.0,
+                "creation_time": 1602054460.2305024
+            },
+            {
+                "steps": 3499983,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-3499983.nn",
+                "reward": 1.0,
+                "creation_time": 1602057273.2694318
+            },
+            {
+                "steps": 3719792,
+                "file_path": "results\\PacmanAgent\\Ghost\\Ghost-3719792.nn",
+                "reward": 0.9821428571428571,
+                "creation_time": 1602058754.29291
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 3719792,
+            "file_path": "results\\PacmanAgent\\Ghost.nn",
+            "reward": 0.9821428571428571,
+            "creation_time": 1602058754.29291
+        }
+    },
+    "Pacman": {
+        "checkpoints": [
+            {
+                "steps": 499976,
+                "file_path": "results\\PacmanAgent\\Pacman\\Pacman-499976.nn",
+                "reward": -0.814249785173507,
+                "creation_time": 1602043686.2427013
+            },
+            {
+                "steps": 999664,
+                "file_path": "results\\PacmanAgent\\Pacman\\Pacman-999664.nn",
+                "reward": -0.800670022314245,
+                "creation_time": 1602049232.1702776
+            },
+            {
+                "steps": 1499991,
+                "file_path": "results\\PacmanAgent\\Pacman\\Pacman-1499991.nn",
+                "reward": -0.8144094558323131,
+                "creation_time": 1602054825.0110826
+            },
+            {
+                "steps": 1846258,
+                "file_path": "results\\PacmanAgent\\Pacman\\Pacman-1846258.nn",
+                "reward": -0.8071098852157593,
+                "creation_time": 1602058754.6412268
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1846258,
+            "file_path": "results\\PacmanAgent\\Pacman.nn",
+            "reward": -0.8071098852157593,
+            "creation_time": 1602058754.6412268
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.1.0",
+        "mlagents_version": "0.20.0",
+        "tensorflow_version": "2.3.1"
+    }
+}

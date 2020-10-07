@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1602018663",
+        "python_version": "3.6.1 (v3.6.1:69c0db5, Mar 21 2017, 18:41:36) [MSC v.1900 64 bit (AMD64)]",
+        "command_line_arguments": "E:\\ProgramFiles\\Python3.6.1\\Scripts\\mlagents-learn .\\AgentPacmanCharacter.yaml --run-id=Pacman",
+        "mlagents_version": "0.20.0",
+        "mlagents_envs_version": "0.20.0",
+        "communication_protocol_version": "1.1.0",
+        "tensorflow_version": "2.3.1",
+        "numpy_version": "1.19.2",
+        "end_time_seconds": "1602018736"
+    },
+    "total": 72.8124588,
+    "count": 1,
+    "self": 0.26455429999998614,
+    "children": {
+        "run_training.setup": {
+            "total": 0.0216814,
+            "count": 1,
+            "self": 0.0216814
+        },
+        "TrainerController.start_learning": {
+            "total": 72.52622310000001,
+            "count": 1,
+            "self": 0.00130100000002642,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 72.52470269999999,
+                    "count": 1,
+                    "self": 72.52470269999999
+                },
+                "TrainerController._save_models": {
+                    "total": 0.00021939999999176507,
+                    "count": 1,
+                    "self": 0.00021939999999176507
+                }
+            }
+        }
+    }
+}

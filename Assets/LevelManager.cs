@@ -1,58 +1,205 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
+[System.Serializable]
+public class PlayerState
+{
+    public int playerIndex;
+    public Vector3 startingPos;
+    public AgentPacmanCharacter agentScript;
+}
 
 public class LevelManager : MonoBehaviour
 {
-    public int score = 0;
-    public int livesLeft = 2;
+    [Header("Game Parameters")]
     public int livesMax = 2;
     public int powerPillMax = 4;
     public float powerPillDuration = 5.0f;
     public float ghostDelay = 5.0f;
-    [Range(1, 6)] public int ghostsMax = 4;
+    public List<PlayerState> playerStates = new List<PlayerState>();
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private GameObject fade;
+    [SerializeField] private GameObject next;
+    [SerializeField] private GameObject retry;
     [Header("Prefabs")]
     [SerializeField] private GameObject pacman;
     [SerializeField] private GameObject[] ghosts;
     [SerializeField] private GameObject dot;
     [SerializeField] private GameObject powerPill;
     
+    [HideInInspector] public int score;
+    [HideInInspector] public int livesLeft = 2;
     [HideInInspector] public LevelData levelData;
     
     private LevelGenerator _levelGenerator;
-    private float _powerPillRemainTime = 0.0f;
-    private GameObject _pacman;
-    private Vector2Int _pacmanSpawnPlace;
+    private int _dotsMax;
+    private float _powerPillRemainTime;
+    private GameObject _pacmanInstance;
+    private List<GameObject> _ghostInstances;
+    private bool _playing;
+    private bool _tryAgain;
+
+    public Vector2 GetClosestDot(bool isPowerPill = false)
+    {
+        return Bfs(_pacmanInstance.GetComponent<CharacterController>().currentTile, isPowerPill);
+        // int minDist = -1;
+        // Vector2 closestDot = Vector2.zero;
+        // foreach (var dot in levelData.dotInstances)
+        // {
+        //     if (isPowerPill && !dot.name.Contains("Power"))
+        //     {
+        //         continue;
+        //     }
+        //     var tile = levelData.TileByLocalPosition(dot.transform.localPosition);
+        //     if (minDist == -1 || minDist > distances[tile.x, tile.y])
+        //     {
+        //         minDist = distances[tile.x, tile.y];
+        //         closestDot = tile;
+        //     }
+        // }
+        //
+        // return closestDot;
+    }
+
+    private Vector2Int Bfs(Vector2Int startTile, bool isPowerPill)
+    {
+        bool[,] visited = new bool[levelData.LevelHeight, levelData.LevelWidth];
+        Queue<Vector3Int> tiles = new Queue<Vector3Int>();
+        tiles.Enqueue(new Vector3Int(startTile.x, startTile.y, 0));
+        while (tiles.Count > 0)
+        {
+            var tileDist = tiles.Dequeue();
+            var tile = new Vector2Int(tileDist.x, tileDist.y);
+            if (!isPowerPill && levelData.levelTiles[tile.x, tile.y] == 'd')
+            {
+                return tile;
+            }
+            if (isPowerPill && levelData.levelTiles[tile.x, tile.y] == 'p')
+            {
+                return tile;
+            }
+            var dist = tileDist.z;
+            visited[tile.x, tile.y] = true;
+            foreach (var move in Globals.Moves)
+            {
+                var nextTile = tile + move;
+                if (!visited[nextTile.x, nextTile.y] && levelData.Free(nextTile))
+                {
+                    tiles.Enqueue(new Vector3Int(nextTile.x, nextTile.y, dist + 1));
+                }
+            }
+        }
+        
+        return Vector2Int.zero;
+    }
+
+    public void OnClickNext()
+    {
+        _tryAgain = false;
+        next.SetActive(false);
+        fade.SetActive(false);
+        gameOverText.enabled = false;
+        foreach (var ps in playerStates)
+        {
+            if (ps.agentScript.type == AgentPacmanCharacter.Type.Pacman)
+            {
+                ps.agentScript.SetReward(1.0f);
+            }
+            ps.agentScript.EndEpisode();  //all agents need to be reset
+        }
+    }
+    
+    public void OnClickRetry()
+    {
+        _tryAgain = true;
+        retry.SetActive(false);
+        fade.SetActive(false);
+        gameOverText.enabled = false;
+        foreach (var ps in playerStates)
+        {
+            if (ps.agentScript.type == AgentPacmanCharacter.Type.Ghost)
+            {
+                ps.agentScript.SetReward(1.0f);
+            }
+            ps.agentScript.EndEpisode();  //all agents need to be reset
+        }
+    }
+
+    public void GameOver(AgentPacmanCharacter.Type whoWon)
+    {
+        _playing = false;
+        fade.SetActive(true);
+        if (whoWon == AgentPacmanCharacter.Type.Pacman)
+        {
+            gameOverText.text = "Level Complete!";
+            gameOverText.enabled = true;
+            next.SetActive(true);
+        }
+        else
+        {
+            gameOverText.text = "Game Over";
+            gameOverText.enabled = true;
+            retry.SetActive(true);
+        }
+    }
 
     public void GameStart()
     {
+        if (_tryAgain)
+        {
+            score = 0;
+        }
+        livesLeft = livesMax;
         LevelStart();
     }
     public void LevelStart()
     {
-        levelData.Reset();
-        _levelGenerator.GenerateLevel();
+        Debug.Log("Level Start!");
+        Reset();
         // levelData.PrintLevel();
+        if (!_tryAgain)
+        {
+            _levelGenerator.GenerateLevel();
+        }
         var freeTiles = GetFreeTiles();
         SpawnPacMan(freeTiles);
         SpawnGhosts();
         SpawnConsumables(freeTiles);
+        _playing = true;
     }
     
-    public void ConsumeDot()
+    public void ConsumeDot(GameObject consumedDot)
     {
+        var tile = levelData.TileByLocalPosition(consumedDot.transform.localPosition);
+        levelData.levelTiles[tile.x, tile.y] = '.';
         levelData.dotsRemain--;
-        Debug.Log(levelData.dotsRemain);
         score += 10;
+        foreach (var ps in playerStates)
+        {
+            if (ps.agentScript.type == AgentPacmanCharacter.Type.Pacman)
+            {
+                ps.agentScript.AddReward(1.0f / _dotsMax);
+            }
+        }
     }
     
-    public void ConsumePowerPill()
+    public void ConsumePowerPill(GameObject consumedDot)
     {
-        levelData.dotsRemain--;
-        score += 100;
+        ConsumeDot(consumedDot);
+        score += 90;
         levelData.powerPillActive = true;
         _powerPillRemainTime = powerPillDuration;
+        foreach (var ghost in _ghostInstances)
+        {
+            Debug.Log(ghost.GetComponent<CharacterController>().ghostScared);
+            ghost.GetComponent<SpriteRenderer>().sprite = ghost.GetComponent<CharacterController>().ghostScared;
+        }
     }
 
     private List<Vector2Int> GetFreeTiles()
@@ -94,7 +241,6 @@ public class LevelManager : MonoBehaviour
 
     private void SpawnConsumables(List<Vector2Int> freeTiles)
     {
-        Debug.Log(freeTiles.Count);
         List<int> shuffledIdx = Utils.RandomPermutation(0, freeTiles.Count);
         int idx = 0;
         while (idx < powerPillMax)
@@ -104,6 +250,8 @@ public class LevelManager : MonoBehaviour
             _powerPill.transform.localPosition = levelData.LocalPositionByTile(tile);
             _powerPill.transform.SetAsFirstSibling();
             levelData.dotsRemain++;
+            _dotsMax++;
+            levelData.levelTiles[tile.x, tile.y] = 'p';
             idx++;
         }
         while (idx < shuffledIdx.Count)
@@ -113,28 +261,28 @@ public class LevelManager : MonoBehaviour
             _dot.transform.localPosition = levelData.LocalPositionByTile(tile);
             _dot.transform.SetAsFirstSibling();
             levelData.dotsRemain++;
+            _dotsMax++;
+            levelData.levelTiles[tile.x, tile.y] = 'd';
             idx++;
         }
     }
 
     private void SpawnPacMan(List<Vector2Int> freeTiles)
     {
-        if (!ReferenceEquals(_pacman, null))
-        {
-            _pacman.GetComponent<MoveController>().currentTile = _pacmanSpawnPlace;
-            _pacman.transform.localPosition = levelData.LocalPositionByTile(_pacmanSpawnPlace);
-            return;
-        }
-        
         List<int> shuffledIdx = Utils.RandomPermutation(0, freeTiles.Count);
         foreach (var idx in shuffledIdx)
         {
             Vector2Int tile = freeTiles[idx];
-            _pacman = Instantiate(pacman, transform);
-            _pacman.transform.localPosition = levelData.LocalPositionByTile(tile);
-            _pacman.GetComponent<MoveController>().currentTile = tile;
-            _pacmanSpawnPlace = tile;
-            freeTiles.Remove(tile); // PacMan spawn place is not free. We can not spawn anything else there.
+            if (ReferenceEquals(_pacmanInstance, null))
+            {
+                _pacmanInstance = Instantiate(pacman, transform);
+            }
+            _pacmanInstance.transform.localPosition = levelData.LocalPositionByTile(tile);
+            var controller = _pacmanInstance.GetComponent<CharacterController>();
+            controller.currentTile = tile;
+            controller.spawnTile = tile;
+            freeTiles.Remove(tile); // Pacman spawn place is not free. We can not spawn anything else there.
+            Debug.Log("Pacman spawned ");
             return;
         }
     }
@@ -147,11 +295,23 @@ public class LevelManager : MonoBehaviour
         while (idx < ghosts.Length)
         {
             Vector2Int tile = freeTiles[shuffledIdx[idx]];
-            var ghost = Instantiate(ghosts[idx], transform);
+            GameObject ghost;
+            if (_ghostInstances.Count > idx)
+            {
+                ghost = _ghostInstances[idx];
+            }
+            else
+            {
+                ghost = Instantiate(ghosts[idx], transform);
+                _ghostInstances.Add(ghost);
+            }
             ghost.transform.localPosition = levelData.LocalPositionByTile(tile);
-            var controller = ghost.GetComponent<MoveController>();
+            var controller = ghost.GetComponent<CharacterController>();
             controller.currentTile = tile;
+            controller.spawnTile = tile;
             controller.aliveDelay = ghostDelay * idx;
+            controller.alive = false;
+            Debug.Log("Ghost spawned " + ghost.name);
             idx++;
         }
     }
@@ -159,7 +319,10 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        score = 0;
+        _tryAgain = false; 
         _levelGenerator = gameObject.GetComponent<LevelGenerator>();
+        _ghostInstances = new List<GameObject>();
         levelData = gameObject.GetComponent<LevelData>();
         GameStart();
     }
@@ -167,7 +330,20 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (_playing)
+        {
+            if (levelData.dotsRemain <= 0)
+            {
+                GameOver(AgentPacmanCharacter.Type.Pacman);
+            }
+
+            if (livesLeft < 0)
+            {
+                GameOver(AgentPacmanCharacter.Type.Ghost);
+            }
+
+            scoreText.text = score.ToString();
+        }
     }
 
     private void FixedUpdate()
@@ -179,7 +355,33 @@ public class LevelManager : MonoBehaviour
             {
                 _powerPillRemainTime = 0.0f;
                 levelData.powerPillActive = false;
+                foreach (var ghost in _ghostInstances)
+                {
+                    ghost.GetComponent<SpriteRenderer>().sprite = ghost.GetComponent<CharacterController>().ghostNormal;
+                }
             }
         }
+    }
+
+    private void Reset()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.CompareTag("Dot"))
+            {
+                Destroy(child.gameObject);
+            }
+            if (child.CompareTag("PowerPill"))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        foreach (var ghost in _ghostInstances)
+        {
+            ghost.GetComponent<SpriteRenderer>().sprite = ghost.GetComponent<CharacterController>().ghostNormal;
+        }
+        _dotsMax = 0;
+        _powerPillRemainTime = 0.0f;
+        levelData.Reset();
     }
 }

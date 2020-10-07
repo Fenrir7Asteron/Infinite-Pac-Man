@@ -10,10 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 6957845006215510197}
   - component: {fileID: 6957845006215510196}
-  - component: {fileID: 6957845006215510186}
   - component: {fileID: 7994678206081778493}
   - component: {fileID: 7241931582065734976}
   - component: {fileID: -218038558894933449}
+  - component: {fileID: 4288573966007141790}
+  - component: {fileID: 2333588113592700640}
+  - component: {fileID: -1394813878922951064}
   m_Layer: 0
   m_Name: GhostPink
   m_TagString: Ghost
@@ -85,25 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &6957845006215510186
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6957845006215510199}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8c1ca448a7cf31e47a15300fcaf7b193, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &7994678206081778493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +104,10 @@ MonoBehaviour:
   moveSpeed: 0.1
   aliveDelay: 0
   currentTile: {x: 0, y: 0}
+  spawnTile: {x: 0, y: 0}
   agentType: 1
+  ghostNormal: {fileID: 21300000, guid: 108c3ee3b91fa1e40b3faf646d231e48, type: 3}
+  ghostScared: {fileID: 21300000, guid: eaff9fec2d3ea69478381ca7ce06a357, type: 3}
 --- !u!58 &7241931582065734976
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -159,3 +145,62 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4288573966007141790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6957845006215510199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4458e7a9fc742154bb83b5dc0ac40b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
+  type: 0
+  timePenalty: 0
+  characterController: {fileID: 0}
+--- !u!114 &2333588113592700640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6957845006215510199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 85
+    NumStackedVectorObservations: 1
+    VectorActionSize: 05000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 5022602860645237092, guid: 4ea2337a0ace485458939014d6f0b202, type: 3}
+  m_InferenceDevice: 0
+  m_BehaviorType: 2
+  m_BehaviorName: Ghost
+  TeamId: 1
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
+--- !u!114 &-1394813878922951064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6957845006215510199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 10
+  TakeActionsBetweenDecisions: 1
