@@ -1,0 +1,5 @@
+model_checkpoint_path: "Ghost-1808532.ckpt"
+all_model_checkpoint_paths: "Ghost-499868.ckpt"
+all_model_checkpoint_paths: "Ghost-999919.ckpt"
+all_model_checkpoint_paths: "Ghost-1499750.ckpt"
+all_model_checkpoint_paths: "Ghost-1808532.ckpt"

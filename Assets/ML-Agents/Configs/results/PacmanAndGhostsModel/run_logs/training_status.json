@@ -1,0 +1,99 @@
+{
+    "Pacman": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\PacmanAndGhostsModel\\Pacman\\Pacman-0.nn",
+                "reward": null,
+                "creation_time": 1602682604.1392193
+            },
+            {
+                "steps": 499809,
+                "file_path": "results\\PacmanAndGhostsModel\\Pacman\\Pacman-499809.nn",
+                "reward": -0.20534239978426033,
+                "creation_time": 1602686843.4086835
+            },
+            {
+                "steps": 999672,
+                "file_path": "results\\PacmanAndGhostsModel\\Pacman\\Pacman-999672.nn",
+                "reward": 0.20772945880889893,
+                "creation_time": 1602690425.1674354
+            },
+            {
+                "steps": 1054622,
+                "file_path": "results\\PacmanAndGhostsModel\\Pacman\\Pacman-1054622.nn",
+                "reward": -0.053831682354211804,
+                "creation_time": 1602690814.2837725
+            },
+            {
+                "steps": 1149989,
+                "file_path": "results\\PacmanAndGhostsModel\\Pacman\\Pacman-1149989.nn",
+                "reward": -0.4707471758592874,
+                "creation_time": 1602691639.4572926
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1149989,
+            "file_path": "results\\PacmanAndGhostsModel\\Pacman.nn",
+            "reward": -0.4707471758592874,
+            "creation_time": 1602691639.4572926
+        }
+    },
+    "Ghost": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-0.nn",
+                "reward": null,
+                "creation_time": 1602682604.4995468
+            },
+            {
+                "steps": 499568,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-499568.nn",
+                "reward": 0.029723344991604488,
+                "creation_time": 1602684470.133514
+            },
+            {
+                "steps": 999748,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-999748.nn",
+                "reward": 0.012298411456868052,
+                "creation_time": 1602686599.5674765
+            },
+            {
+                "steps": 1499932,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-1499932.nn",
+                "reward": 0.02890274371020496,
+                "creation_time": 1602688423.146703
+            },
+            {
+                "steps": 1999736,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-1999736.nn",
+                "reward": 0.046794235706329346,
+                "creation_time": 1602690195.2185528
+            },
+            {
+                "steps": 2113844,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-2113844.nn",
+                "reward": 0.032581165852025154,
+                "creation_time": 1602690813.9564743
+            },
+            {
+                "steps": 2316104,
+                "file_path": "results\\PacmanAndGhostsModel\\Ghost\\Ghost-2316104.nn",
+                "reward": 0.7959118527877662,
+                "creation_time": 1602691639.8096125
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2316104,
+            "file_path": "results\\PacmanAndGhostsModel\\Ghost.nn",
+            "reward": 0.7959118527877662,
+            "creation_time": 1602691639.8096125
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.1.0",
+        "mlagents_version": "0.20.0",
+        "tensorflow_version": "2.3.1"
+    }
+}

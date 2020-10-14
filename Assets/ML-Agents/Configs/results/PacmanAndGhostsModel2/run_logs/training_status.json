@@ -1,0 +1,63 @@
+{
+    "Ghost": {
+        "checkpoints": [
+            {
+                "steps": 499868,
+                "file_path": "results\\PacmanAndGhostsModel2\\Ghost\\Ghost-499868.nn",
+                "reward": 0.9167081106411801,
+                "creation_time": 1602693309.7222028
+            },
+            {
+                "steps": 999919,
+                "file_path": "results\\PacmanAndGhostsModel2\\Ghost\\Ghost-999919.nn",
+                "reward": 1.010396203994751,
+                "creation_time": 1602695219.380937
+            },
+            {
+                "steps": 1499750,
+                "file_path": "results\\PacmanAndGhostsModel2\\Ghost\\Ghost-1499750.nn",
+                "reward": 1.0181167125701904,
+                "creation_time": 1602697180.2282412
+            },
+            {
+                "steps": 1808532,
+                "file_path": "results\\PacmanAndGhostsModel2\\Ghost\\Ghost-1808532.nn",
+                "reward": 1.0044542774558067,
+                "creation_time": 1602698380.009842
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1808532,
+            "file_path": "results\\PacmanAndGhostsModel2\\Ghost.nn",
+            "reward": 1.0044542774558067,
+            "creation_time": 1602698380.009842
+        }
+    },
+    "Pacman": {
+        "checkpoints": [
+            {
+                "steps": 499768,
+                "file_path": "results\\PacmanAndGhostsModel2\\Pacman\\Pacman-499768.nn",
+                "reward": -0.8056971778472265,
+                "creation_time": 1602695473.742051
+            },
+            {
+                "steps": 875739,
+                "file_path": "results\\PacmanAndGhostsModel2\\Pacman\\Pacman-875739.nn",
+                "reward": -0.7991377976205614,
+                "creation_time": 1602698380.314119
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 875739,
+            "file_path": "results\\PacmanAndGhostsModel2\\Pacman.nn",
+            "reward": -0.7991377976205614,
+            "creation_time": 1602698380.314119
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.1.0",
+        "mlagents_version": "0.20.0",
+        "tensorflow_version": "2.3.1"
+    }
+}

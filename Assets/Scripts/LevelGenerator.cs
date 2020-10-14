@@ -9,18 +9,17 @@ using Random = UnityEngine.Random;
 public class LevelGenerator : MonoBehaviour
 {
     [Header("Level parameters")]
-    [SerializeField] [Range(8, 30)] private int halfWidthInTiles = 14;
-    [SerializeField] [Range(8, 30)] private int halfHeightInTiles = 15;
+    
     [Range(6, 10)] public int ghostBoxWidth = 6;
     [Range(4, 10)] public int ghostBoxHeight = 4;
     [SerializeField] [Range(0.45f, 1.0f)] private float maxEmptySpaces = 0.45f;
     
-    [Header("Controls")]
-    [SerializeField] private bool generateLevel = false;
-    [SerializeField] private String exportName = "";
-    [SerializeField] private bool exportLevel = false;
-    [SerializeField] private String importName = "";
-    [SerializeField] private bool importLevel = false;
+    // [Header("Controls")]
+    // [SerializeField] private bool generateLevel = false;
+    // [SerializeField] private String exportName = "";
+    // [SerializeField] private bool exportLevel = false;
+    // [SerializeField] private String importName = "";
+    // [SerializeField] private bool importLevel = false;
 
     [Header("Level tiles")]
     [SerializeField] private Tile[] obstacle;
@@ -32,6 +31,8 @@ public class LevelGenerator : MonoBehaviour
     
     private char[,] _halfLevelTiles;
     private LevelData _levelData;
+    private int _halfWidthInTiles = 14;
+    private int _halfHeightInTiles = 15;
 
     private readonly Tuple<int, int, Vector2Int>[] _wallBlueprints =
     {
@@ -55,18 +56,20 @@ public class LevelGenerator : MonoBehaviour
         while (true)
         {
             _levelData.tilemap.ClearAllTiles();
-            _halfLevelTiles = new char[halfHeightInTiles, halfWidthInTiles];
-            mainCamera.orthographicSize = Math.Max(halfHeightInTiles, (int) Math.Ceiling((double) halfWidthInTiles / 4 * 3)) + 3;
-            for (int i = 0; i < halfHeightInTiles - 1; ++i)
+            _halfHeightInTiles = Random.Range(8, 14);
+            _halfWidthInTiles = Random.Range(8, 14);
+            _halfLevelTiles = new char[_halfHeightInTiles, _halfWidthInTiles];
+            mainCamera.orthographicSize = Math.Max(_halfHeightInTiles, (int) Math.Ceiling((double) _halfWidthInTiles / 4 * 3)) + 3;
+            for (int i = 0; i < _halfHeightInTiles - 1; ++i)
             {
-                for (int j = 0; j < halfWidthInTiles - 1; ++j)
+                for (int j = 0; j < _halfWidthInTiles - 1; ++j)
                 {
                     _halfLevelTiles[i, j] = '.';
                 }
             }
 
-            Build(halfWidthInTiles, 1, new Vector2Int(halfHeightInTiles - 1, 0), 'B');
-            Build(1, halfHeightInTiles, new Vector2Int(0, halfWidthInTiles - 1), 'B');
+            Build(_halfWidthInTiles, 1, new Vector2Int(_halfHeightInTiles - 1, 0), 'B');
+            Build(1, _halfHeightInTiles, new Vector2Int(0, _halfWidthInTiles - 1), 'B');
             ReserveGhostBox();
             // PrintLevel();
             var diggerPos = new Vector2Int(0, 0);
@@ -147,13 +150,13 @@ public class LevelGenerator : MonoBehaviour
     private void MirrorLevel()
     {
         // _levelData.levelTiles is _halfLevelTiles reflected horizontally and vertically - making symmetric level.
-        _levelData.levelTiles = new char[halfHeightInTiles * 2, halfWidthInTiles * 2];
+        _levelData.levelTiles = new char[_halfHeightInTiles * 2, _halfWidthInTiles * 2];
         // Copy generated tiles
-        for (int i = halfHeightInTiles; i < halfHeightInTiles * 2; ++i)
+        for (int i = _halfHeightInTiles; i < _halfHeightInTiles * 2; ++i)
         {
-            for (int j = halfWidthInTiles; j < halfWidthInTiles * 2; ++j)
+            for (int j = _halfWidthInTiles; j < _halfWidthInTiles * 2; ++j)
             {
-                _levelData.levelTiles[i, j] = _halfLevelTiles[i - halfHeightInTiles, j - halfWidthInTiles];
+                _levelData.levelTiles[i, j] = _halfLevelTiles[i - _halfHeightInTiles, j - _halfWidthInTiles];
                 // After level is generated we do not need information about corridors.
                 if (_levelData.levelTiles[i, j] == 'C')
                 {
@@ -162,19 +165,19 @@ public class LevelGenerator : MonoBehaviour
             }
         }
         // Reflect horizontally
-        for (int i = halfHeightInTiles; i < halfHeightInTiles * 2; ++i)
+        for (int i = _halfHeightInTiles; i < _halfHeightInTiles * 2; ++i)
         {
-            for (int j = halfWidthInTiles - 1; j >= 0; --j)
+            for (int j = _halfWidthInTiles - 1; j >= 0; --j)
             {
-                _levelData.levelTiles[i, j] = _levelData.levelTiles[i, halfWidthInTiles + (halfWidthInTiles - j - 1)];
+                _levelData.levelTiles[i, j] = _levelData.levelTiles[i, _halfWidthInTiles + (_halfWidthInTiles - j - 1)];
             }
         }
         // Reflect vertically
-        for (int i = halfHeightInTiles - 1; i >= 0; --i)
+        for (int i = _halfHeightInTiles - 1; i >= 0; --i)
         {
-            for (int j = 0; j < halfWidthInTiles * 2; ++j)
+            for (int j = 0; j < _halfWidthInTiles * 2; ++j)
             {
-                _levelData.levelTiles[i, j] = _levelData.levelTiles[halfHeightInTiles + (halfHeightInTiles - i - 1), j];
+                _levelData.levelTiles[i, j] = _levelData.levelTiles[_halfHeightInTiles + (_halfHeightInTiles - i - 1), j];
             }
         }
     }
@@ -374,16 +377,16 @@ public class LevelGenerator : MonoBehaviour
         switch (tileTable[x, y])
         {
             case 'W':
-                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), obstacle[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - _halfWidthInTiles, x - _halfHeightInTiles, 0), obstacle[tile]);
                 break;
             case 'B':
-                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), levelBorder[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - _halfWidthInTiles, x - _halfHeightInTiles, 0), levelBorder[tile]);
                 break;
             case 'G':
-                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[tile]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - _halfWidthInTiles, x - _halfHeightInTiles, 0), ghostBox[tile]);
                 break;
             case 'D':
-                _levelData.tilemap.SetTile(new Vector3Int(y - halfWidthInTiles, x - halfHeightInTiles, 0), ghostBox[(int) TileDirection.Other]);
+                _levelData.tilemap.SetTile(new Vector3Int(y - _halfWidthInTiles, x - _halfHeightInTiles, 0), ghostBox[(int) TileDirection.Other]);
                 break;
         }
     }
@@ -393,7 +396,7 @@ public class LevelGenerator : MonoBehaviour
         int count = 0;
         foreach (var cell in cells)
         {
-            if (cell.x < 0 || cell.x >= halfHeightInTiles * 2 || cell.y < 0 || cell.y >= halfWidthInTiles * 2)
+            if (cell.x < 0 || cell.x >= _halfHeightInTiles * 2 || cell.y < 0 || cell.y >= _halfWidthInTiles * 2)
             {
                 count++;
             }
@@ -410,10 +413,10 @@ public class LevelGenerator : MonoBehaviour
     public void PrintLevel()
     {
         Debug.Log("Level Table");
-        for (int i = 0; i < halfHeightInTiles; ++i)
+        for (int i = 0; i < _halfHeightInTiles; ++i)
         {
             String tiles = "";
-            for (int j = 0; j < halfWidthInTiles; ++j)
+            for (int j = 0; j < _halfWidthInTiles; ++j)
             {
                 tiles += _halfLevelTiles[i, j];
             }
@@ -466,13 +469,13 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = startingPos[0]; i < startingPos[0] + height; ++i)
         {
-            if (i < 0 || i >= halfHeightInTiles)
+            if (i < 0 || i >= _halfHeightInTiles)
             {
                 continue;
             }
             for (int j = startingPos[1]; j < startingPos[1] + width; ++j)
             {
-                if (j < 0 || j >= halfWidthInTiles)
+                if (j < 0 || j >= _halfWidthInTiles)
                 {
                     continue;
                 }
@@ -492,7 +495,7 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < length; ++i)
         {
             Vector2Int nextPos = currentPos + dir;
-            if (nextPos.x < 0 || nextPos.x >= halfHeightInTiles || nextPos.y < 0 || nextPos.y >= halfWidthInTiles)
+            if (nextPos.x < 0 || nextPos.x >= _halfHeightInTiles || nextPos.y < 0 || nextPos.y >= _halfWidthInTiles)
             {
                 // Digging out of bounds
                 return false;
@@ -542,13 +545,13 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = startingPos[0]; i < startingPos[0] + height; ++i)
         {
-            if (i < 0 || i >= halfHeightInTiles)
+            if (i < 0 || i >= _halfHeightInTiles)
             {
                 continue;
             }
             for (int j = startingPos[1]; j < startingPos[1] + width; ++j)
             {
-                if (j < 0 || j >= halfWidthInTiles)
+                if (j < 0 || j >= _halfWidthInTiles)
                 {
                     continue;
                 }
@@ -575,85 +578,85 @@ public class LevelGenerator : MonoBehaviour
         Other,
     }
 
-    void Update()
-    {
-        if (generateLevel)
-        {
-            GenerateLevel();
-            generateLevel = false;
-        }
-
-        if (exportLevel)
-        {
-            exportLevel = false;
-            if (!Directory.Exists("Assets/Levels"))
-            {
-                Directory.CreateDirectory("Assets/Levels");
-            }
-            String exportPath = String.Concat("Assets/Levels/", exportName);
-            System.IO.FileInfo fi = null;
-            try {
-                fi = new System.IO.FileInfo(exportPath);
-            }
-            catch (ArgumentException) { }
-            catch (System.IO.PathTooLongException) { }
-            catch (NotSupportedException) { }
-            if (!ReferenceEquals(fi, null)) {
-                using (var sw = new StreamWriter(exportPath))
-                {
-                    for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
-                        {
-                            sw.Write(_levelData.levelTiles[i, j]);
-                        }
-                        sw.Write("\n");
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                }
-            }
-        }
-
-        if (importLevel)
-        {
-            importLevel = false;
-            if (!Directory.Exists("Assets/Levels"))
-            {
-                Debug.Log("Directory 'Assets/Levels/' does not exist, nothing to import.");
-                return;
-            }
-            String importPath = String.Concat("Assets/Levels/", importName);
-            System.IO.FileInfo fi = null;
-            try {
-                fi = new System.IO.FileInfo(importPath);
-            }
-            catch (ArgumentException) { }
-            catch (System.IO.PathTooLongException) { }
-            catch (NotSupportedException) { }
-            if (!ReferenceEquals(fi, null)) {
-                using (var sr = new StreamReader(importPath))
-                {
-                    for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
-                    {
-                        String line = sr.ReadLine();
-                        if (!ReferenceEquals(line, null))
-                        {
-                            for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
-                            {
-                                if (j < line.Length)
-                                {
-                                    _levelData.levelTiles[i, j] = line[j];
-                                }
-                            }
-                        }
-                    }
-                    sr.Close();
-                    
-                    RenderLevel();
-                }
-            }
-        }
-    }
+    // void Update()
+    // {
+    //     if (generateLevel)
+    //     {
+    //         GenerateLevel();
+    //         generateLevel = false;
+    //     }
+    //
+    //     if (exportLevel)
+    //     {
+    //         exportLevel = false;
+    //         if (!Directory.Exists("Assets/Levels"))
+    //         {
+    //             Directory.CreateDirectory("Assets/Levels");
+    //         }
+    //         String exportPath = String.Concat("Assets/Levels/", exportName);
+    //         System.IO.FileInfo fi = null;
+    //         try {
+    //             fi = new System.IO.FileInfo(exportPath);
+    //         }
+    //         catch (ArgumentException) { }
+    //         catch (System.IO.PathTooLongException) { }
+    //         catch (NotSupportedException) { }
+    //         if (!ReferenceEquals(fi, null)) {
+    //             using (var sw = new StreamWriter(exportPath))
+    //             {
+    //                 for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
+    //                 {
+    //                     for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
+    //                     {
+    //                         sw.Write(_levelData.levelTiles[i, j]);
+    //                     }
+    //                     sw.Write("\n");
+    //                 }
+    //
+    //                 sw.Flush();
+    //                 sw.Close();
+    //             }
+    //         }
+    //     }
+    //
+    //     if (importLevel)
+    //     {
+    //         importLevel = false;
+    //         if (!Directory.Exists("Assets/Levels"))
+    //         {
+    //             Debug.Log("Directory 'Assets/Levels/' does not exist, nothing to import.");
+    //             return;
+    //         }
+    //         String importPath = String.Concat("Assets/Levels/", importName);
+    //         System.IO.FileInfo fi = null;
+    //         try {
+    //             fi = new System.IO.FileInfo(importPath);
+    //         }
+    //         catch (ArgumentException) { }
+    //         catch (System.IO.PathTooLongException) { }
+    //         catch (NotSupportedException) { }
+    //         if (!ReferenceEquals(fi, null)) {
+    //             using (var sr = new StreamReader(importPath))
+    //             {
+    //                 for (int i = 0; i < _levelData.levelTiles.GetLength(0); i++)
+    //                 {
+    //                     String line = sr.ReadLine();
+    //                     if (!ReferenceEquals(line, null))
+    //                     {
+    //                         for (int j = 0; j < _levelData.levelTiles.GetLength(1); j++)
+    //                         {
+    //                             if (j < line.Length)
+    //                             {
+    //                                 _levelData.levelTiles[i, j] = line[j];
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //                 sr.Close();
+    //                 
+    //                 RenderLevel();
+    //             }
+    //         }
+    //     }
+    // }
 }

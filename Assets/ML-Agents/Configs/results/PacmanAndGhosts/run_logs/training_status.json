@@ -1,0 +1,39 @@
+{
+    "Pacman": {
+        "checkpoints": [
+            {
+                "steps": 200278,
+                "file_path": "results\\PacmanAndGhosts\\Pacman\\Pacman-200278.nn",
+                "reward": -0.997866046304504,
+                "creation_time": 1602682478.8946564
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 200278,
+            "file_path": "results\\PacmanAndGhosts\\Pacman.nn",
+            "reward": -0.997866046304504,
+            "creation_time": 1602682478.8946564
+        }
+    },
+    "Ghost": {
+        "checkpoints": [
+            {
+                "steps": 394140,
+                "file_path": "results\\PacmanAndGhosts\\Ghost\\Ghost-394140.nn",
+                "reward": 0.4152467116713524,
+                "creation_time": 1602682479.2499797
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 394140,
+            "file_path": "results\\PacmanAndGhosts\\Ghost.nn",
+            "reward": 0.4152467116713524,
+            "creation_time": 1602682479.2499797
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.1.0",
+        "mlagents_version": "0.20.0",
+        "tensorflow_version": "2.3.1"
+    }
+}

@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 28f2c6d695940a74ab4a9c3c5883a9e3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
     VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 5022602860645237092, guid: aa88165a1e7fda3459e7cd4c99d9f580, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: b5cdaa705f3131441ad96872ec37772e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 1
   m_BehaviorName: Pacman
