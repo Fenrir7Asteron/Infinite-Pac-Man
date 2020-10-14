@@ -20,7 +20,7 @@ public class LevelManager : MonoBehaviour
     public int powerPillMax = 4;
     public float powerPillDuration = 5.0f;
     public float ghostDelay = 5.0f;
-    public List<PlayerState> playerStates = new List<PlayerState>();
+    
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI livesText;
@@ -39,6 +39,7 @@ public class LevelManager : MonoBehaviour
     [HideInInspector] public int livesLeft = 2;
     [HideInInspector] public LevelData levelData;
     [HideInInspector] public bool playing;
+    [HideInInspector] public List<PlayerState> playerStates = new List<PlayerState>();
     
     private LevelGenerator _levelGenerator;
     private int _dotsMax;

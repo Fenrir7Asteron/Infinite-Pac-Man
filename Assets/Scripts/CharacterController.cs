@@ -32,7 +32,6 @@ public class CharacterController : MonoBehaviour
         _levelManager = GetComponentInParent<LevelManager>();
         _animator = GetComponent<Animator>();
         _agent = GetComponent<AgentPacmanCharacter>();
-        agentMove = Globals.MoveDirection.None;
         if (agentType == AgentType.Pacman)
         {
             alive = true;
